@@ -1,0 +1,40 @@
+os: linux
+dist: xenial
+arch:
+  - amd64
+  - ppc64le
+
+env:
+  global:
+    TRAVIS_BRANCH=travis_ocf_ra
+    VAGRANT_VERSION=2.2.5
+    DOCKER_IMAGE=bogdando/rabbitmq-cluster-ocf
+    UPLOAD_METHOD=none
+    OCF_RA_PROVIDER=rabbitmq
+    OCF_RA_TYPE=rabbitmq-server-ha
+    STORAGE=/var/tmp/rmq
+    POLICY_BASE64=IyBUaGlzIHNjcmlwdCBpcyBjYWxsZWQgYnkgcmFiYml0bXEtc2VydmVyLWhhLm9jZiBkdXJpbmcgUmFiYml0TVEKIyBjbHVzdGVyIHN0YXJ0IHVwLiBJdCBpcyBhIGNvbnZlbmllbnQgcGxhY2UgdG8gc2V0IHlvdXIgY2x1c3RlcgojIHBvbGljeSBoZXJlLCBmb3IgZXhhbXBsZToKIyAke09DRl9SRVNLRVlfY3RsfSBzZXRfcG9saWN5IGhhLWFsbCAiLiIgJ3siaGEtbW9kZSI6ImFsbCIsICJoYS1zeW5jLW1vZGUiOiJhdXRvbWF0aWMiLCAiaGEtc3luYy1iYXRjaC1zaXplIjoxMDAwMH0nCgojIEVuYWJsZSBoYS1wb2xpY3kgd2l0aCB0aGUgcmVwbGljYSBmYWN0b3Igb2YgNSBmb3IgamVwc2VuIHF1ZXVlcwpvY2ZfbG9nIGluZm8gIiR7TEh9IFNldHRpbmcgSEEgcG9saWN5IGZvciBhbGwgcXVldWVzIgoke09DRl9SRVNLRVlfY3RsfSBzZXRfcG9saWN5IGhhLWFsbCAiamVwc2VuLiIgJ3siaGEtbW9kZSI6ImV4YWN0bHkiLCAiaGEtcGFyYW1zIjoyLCAiaGEtc3luYy1tb2RlIjoiYXV0b21hdGljIn0nCg==
+    CACHE=/var/tmp/releases
+    DOCKER_MOUNTS="${HOME}/${OCF_RA_PROVIDER}:/usr/lib/ocf/resource.d/${OCF_RA_PROVIDER}/${OCF_RA_PROVIDER}:ro jepsen:/jepsen"
+    DOCKER_DRIVER=aufs
+  matrix:
+    - >-
+      USE_JEPSEN=false
+      QUIET=true
+      SMOKETEST_WAIT=360
+      CPU=500
+      MEMORY=512M
+    - >-
+      USE_JEPSEN=true
+      QUIET=false
+      SMOKETEST_WAIT=1800
+      CPU=333
+      MEMORY=512M
+      
+ 
+matrix:
+  allow_failures:
+    - env: USE_JEPSEN=true QUIET=false SMOKETEST_WAIT=900 CPU=333 MEMORY=512M
+
+
+script: env
